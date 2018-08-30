@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using StockTradingAnalysis.Domain.CQRS.Cmd.Commands;
-using StockTradingAnalysis.Domain.CQRS.Query.Queries;
 using StockTradingAnalysis.Interfaces.Commands;
 using StockTradingAnalysis.Interfaces.Queries;
 using StockTradingAnalysis.Interfaces.ReadModel;
@@ -105,10 +104,10 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2012-03-06 00:00"), 17, 53.74m, 0, string.Empty, string.Empty, null, 0, 0, stockId,
                     Guid.Parse("CC715911-FD9E-428B-8C1C-E49A08D2619F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-05-08 00:00"), 30, 1.00m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteSell(new TransactionSellCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionSellCommand(Guid.NewGuid(), -1,
                      DateTime.Parse("2013-10-01 08:02"), 30, 64.60m, 15.40m, string.Empty, string.Empty, null, stockId, 0, 34.67m, 69.70m, new List<Guid>()));
 
                 result = string.Format(Resources.ViewTextTestDataControllerSecurityCreated, "Hochtief");
@@ -124,32 +123,32 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2011-05-03 11:49"), 22, 43.68m, 0, string.Empty, string.Empty, null, 0, 0, stockId,
                     Guid.Parse("CC715911-FD9E-428B-8C1C-E49A08D2619F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2011-05-27 00:00"), 22, 0.75m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2012-06-01 00:00"), 22, 0.75m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-05-24 00:00"), 22, 0.75m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2014-05-23 00:00"), 22, 0.75m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2014-06-24 00:00"), 22, 1.37m, 0,
                     "Dies ist eigentlich der Verkauf der Bezugsrechte der Deutschen Bank. Der Einfachheit halber wird dies als Dividende deklariert.",
                     string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2015-05-22 00:00"), 22, 0.75m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2017-04-04 00:00"), 22, 1.95m, 0,
                     "Verk. Teil-/Bezugsr der Inhaber-Bezugsrechte. Nicht ausgeübten Bezugsrechte wurden bestens verkauft.",
                     string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2017-05-23 00:00"), 22, 0.19m, 0, string.Empty, string.Empty, null, stockId, 0));
 
                 result = string.Format(Resources.ViewTextTestDataControllerSecurityCreated, "Deutsche Bank");
@@ -166,13 +165,13 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2011-06-09 00:00"), 40, 34.50m, 9.90m, string.Empty, string.Empty, null, 0, 0, stockId,
                     Guid.Parse("CC715911-FD9E-428B-8C1C-E49A08D2619F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2015-02-02 00:00"), 40, 0.11m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2016-02-01 00:00"), 40, 0.15m, 0, string.Empty, string.Empty, null, stockId, 0));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2017-02-01 00:00"), 40, 0.15m, 0, string.Empty, string.Empty, null, stockId, 0));
 
                 _commandDispatcher.Execute(new CalculationAddCommand(Guid.NewGuid(), -1, "Thyssen Krupp", "750000", 1, 0,
@@ -191,9 +190,9 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2013-02-13 19:38"), 650, 1.42m, 9.90m, string.Empty, string.Empty, null, 1.35m, 1.58m, stockId,
                     Guid.Parse("7DB975E4-60EC-44A6-86F2-3CD808F6BC43")));
 
-                ExecuteSell(new TransactionSellCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionSellCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-03-12 19:19"), 650, 1.39m, 11.15m, string.Empty, string.Empty, null, stockId,
-                    10.71m, 2.80m, 3.58m,
+                    10.71m, 1.10m, 3.58m,
                     new List<Guid>()
                     {
                         Guid.Parse("B3ACE2B0-B820-4E1A-86C6-EF3D1991CF9A"),
@@ -204,9 +203,9 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2013-03-18 09:03"), 700, 1.19m, 11.15m, string.Empty, string.Empty, null, 1.14m, 1.37m, stockId,
                     Guid.Parse("7DB975E4-60EC-44A6-86F2-3CD808F6BC43")));
 
-                ExecuteSell(new TransactionSellCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionSellCommand(Guid.NewGuid(), -1,
                      DateTime.Parse("2013-03-25 16:22"), 700, 1.14m, 11.15m, string.Empty, string.Empty, null, stockId,
-                     10.71m, 2.80m, 3.58m,
+                     10.71m, 1.00m, 2.58m,
                      new List<Guid>()
                      {
                         Guid.Parse("BEC6DE2C-2E6A-4B84-8A11-E8726A5C5EC9"),
@@ -230,21 +229,21 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2013-09-02 09:04"), 23.79m, 12.39m, 5.16m, string.Empty, "Altersvorsorge", null, 0,
                     0, stockId, Guid.Parse("EF545D8E-3FF1-42A4-9FD5-F6B3069CCE6F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-09-18 00:00"), 23.62m, 0.04m, 0, string.Empty, "Altersvorsorge", null, stockId, 0));
 
                 _commandDispatcher.Execute(new TransactionBuyCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-12-02 09:04"), 22.27m, 13.24m, 5.16m, string.Empty, "Altersvorsorge", null, 0,
                     0, stockId, Guid.Parse("EF545D8E-3FF1-42A4-9FD5-F6B3069CCE6F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-12-21 00:00"), 47.41m, 0.04m, 0, string.Empty, "Altersvorsorge", null, stockId, 0));
 
                 _commandDispatcher.Execute(new TransactionBuyCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2014-03-03 09:06"), 22.12m, 13.33m, 5.16m, string.Empty, "Altersvorsorge", null, 0,
                     0, stockId, Guid.Parse("EF545D8E-3FF1-42A4-9FD5-F6B3069CCE6F")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2014-03-19 00:00"), 69.69m, 0.04m, 0, string.Empty, "Altersvorsorge", null, stockId, 0));
 
                 result = string.Format(Resources.ViewTextTestDataControllerSecurityCreated, "iShares PLC-S&P 500 Index Fd");
@@ -260,18 +259,36 @@ namespace StockTradingAnalysis.Web.Controllers
                     DateTime.Parse("2011-06-08 20:36"), 70, 19.05m, 9.90m, string.Empty, string.Empty, null, 0, 0, stockId,
                     Guid.Parse("67380559-9393-4628-AC3F-3807F61D83B9")));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2011-07-04 00:00"), 70, 1.14m, 0, string.Empty, String.Empty, null, stockId, 19.95m));
 
-                ExecuteDividend(new TransactionDividendCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionDividendCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2012-05-16 00:00"), 70, 1.17m, 0, string.Empty, String.Empty, null, stockId, 0));
 
-                ExecuteSell(new TransactionSellCommand(Guid.NewGuid(), -1,
+                _commandDispatcher.Execute(new TransactionSellCommand(Guid.NewGuid(), -1,
                     DateTime.Parse("2013-02-06 14:41"), 70, 25.02m, 11.15m, string.Empty, string.Empty, null, stockId,
                     0, 10m, 35.92m,
                     new List<Guid> { Guid.Parse("47D36CC2-7A40-43BD-B8CB-940BA82E851B") }));
 
                 result = string.Format(Resources.ViewTextTestDataControllerSecurityCreated, "ProSiebenSat1 Media");
+            }
+            //Beiersdorf AG
+            else if (id == 7)
+            {
+                var stockId = Guid.Parse("FB065C9A-BA34-4853-A4B7-281DB15CD48C");
+                _commandDispatcher.Execute(new StockAddCommand(stockId, -1, "Beiersdorf AG", "520000", "Aktie", "Long"));
+                DownloadQuotes(stockId);
+
+                _commandDispatcher.Execute(new TransactionBuyCommand(Guid.NewGuid(), -1,
+                    DateTime.Parse("2018-05-07 10:00"), 10, 94.1m, 9.90m, string.Empty, string.Empty, null, 0, 0, stockId,
+                    Guid.Parse("67380559-9393-4628-AC3F-3807F61D83B9")));
+
+                _commandDispatcher.Execute(new TransactionSellCommand(Guid.NewGuid(), -1,
+                    DateTime.Parse("2018-05-07 14:41"), 5, 94.6m, 11.15m, string.Empty, string.Empty, null, stockId,
+                    5m, 94.020m, 95.0m,
+                    new List<Guid> { Guid.Parse("A9F112DB-D3CB-4254-B232-916C91FC4812"), Guid.Parse("47D36CC2-7A40-43BD-B8CB-940BA82E851B") }));
+
+                result = string.Format(Resources.ViewTextTestDataControllerSecurityCreated, "Beiersdorf AG");
             }
 
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -290,36 +307,6 @@ namespace StockTradingAnalysis.Web.Controllers
                 var cmd = new StockQuotationsAddOrChangeCommand(stockId, 0, quotes);
                 _commandDispatcher.Execute(cmd);
             }
-        }
-
-        /// <summary>
-        /// Excecutes a calculation
-        /// </summary>
-        /// <param name="command">The command.</param>
-        private void ExecuteSell(TransactionSellCommand command)
-        {
-            _commandDispatcher.Execute(command);
-
-            _commandDispatcher.Execute(
-                new TransactionCalculateCommand(command.AggregateId,
-                    _queryDispatcher
-                        .Execute(new TransactionByIdQuery(command.AggregateId))
-                        .OriginalVersion));
-        }
-
-        /// <summary>
-        /// Excecutes a dividend calculation
-        /// </summary>
-        /// <param name="command">The command.</param>
-        private void ExecuteDividend(TransactionDividendCommand command)
-        {
-            _commandDispatcher.Execute(command);
-
-            _commandDispatcher.Execute(
-                new TransactionCalculateDividendCommand(command.AggregateId,
-                    _queryDispatcher
-                        .Execute(new TransactionByIdQuery(command.AggregateId))
-                        .OriginalVersion));
         }
     }
 }

@@ -5,7 +5,6 @@ using StockTradingAnalysis.Core.Common;
 using StockTradingAnalysis.Domain.Events.Events;
 using StockTradingAnalysis.Interfaces.Domain;
 using StockTradingAnalysis.Interfaces.Events;
-using StockTradingAnalysis.Interfaces.Services;
 using StockTradingAnalysis.Interfaces.Services.Domain;
 
 namespace StockTradingAnalysis.Domain.Events.Aggregates
@@ -14,11 +13,8 @@ namespace StockTradingAnalysis.Domain.Events.Aggregates
         IHandle<TransactionBuyingOrderAddedEvent>,
         IHandle<TransactionSellingOrderAddedEvent>,
         IHandle<TransactionUndoEvent>,
-        IHandle<TransactionPerformanceCalculatedEvent>,
         IHandle<TransactionDividendOrderAddedEvent>,
-        IHandle<TransactionDividendCalculatedEvent>,
-        IHandle<TransactionSplitOrderAddedEvent>,
-        IHandle<StockOverallPerformanceChangedEvent>
+        IHandle<TransactionSplitOrderAddedEvent>
     {
         /// <summary>
         /// Gets the aggregate id
@@ -176,7 +172,11 @@ namespace StockTradingAnalysis.Domain.Events.Aggregates
         {
             Id = id;
 
-            ApplyChange(new TransactionSplitOrderAddedEvent(id, typeof(TransactionAggregate), orderDate, shares, pricePerShare, stockId));
+            var openPosition = DependencyResolver.GetService<ITransactionCalculationService>().CalculateOpenPositions()
+                ?.OpenPositions?.FirstOrDefault(o => o.Stock.Id.Equals(stockId));
+
+            ApplyChange(new TransactionSplitOrderAddedEvent(id, typeof(TransactionAggregate), orderDate, shares,
+                pricePerShare, openPosition?.PositionSize ?? 0, openPosition?.OrderCosts ?? 0, stockId));
         }
 
         /// <summary>
@@ -184,57 +184,7 @@ namespace StockTradingAnalysis.Domain.Events.Aggregates
         /// </summary>
         public void Undo()
         {
-            ApplyChange(new TransactionUndoEvent(Id, typeof(TransactionAggregate)));
-        }
-
-        /// <summary>
-        /// Calculates the performance for this transaction if its a selling transaction
-        /// </summary>
-        public void CalculatePerformance()
-        {
-            var service = DependencyResolver.GetService<ITransactionPerformanceService>();
-            var book = DependencyResolver.GetService<ITransactionBook>();
-
-            var entries = book.GetLastCommittedChanges(StockId).ToList();
-            var sell = entries.FirstOrDefault(e => e.TransactionId == Id) as ISellingTransactionBookEntry;
-            var buys = entries.Where(e => e.TransactionId != Id).Cast<IBuyingTransactionBookEntry>();
-
-            var performance = service.GetPerformance(sell, buys, MFE, MAE);
-            ApplyChange(new TransactionPerformanceCalculatedEvent(Id, typeof(TransactionAggregate),
-                performance.ProfitAbsolute,
-                performance.ProfitPercentage,
-                performance.ProfitMade,
-                performance.HoldingPeriod,
-                performance.R,
-                performance.ExitEfficiency,
-                performance.EntryEfficiency,
-                performance.MAEAbsolute,
-                performance.MFEAbsolute));
-
-            ApplyChange(new StockOverallPerformanceChangedEvent(Id, typeof(TransactionAggregate), performance.ProfitAbsolute, StockId));
-        }
-
-        /// <summary>
-        /// Calculates the performance for this transaction if its a dividend transaction
-        /// </summary>
-        public void CalculateDividendPerformance()
-        {
-            var service = DependencyResolver.GetService<ITransactionPerformanceService>();
-            var book = DependencyResolver.GetService<ITransactionBook>();
-
-            var entries = book.GetLastCommittedChanges(StockId).ToList();
-            var dividend = entries.FirstOrDefault(e => e.TransactionId == Id) as IDividendTransactionBookEntry;
-            var buys = entries.Where(e => e.TransactionId != Id).Cast<IBuyingTransactionBookEntry>();
-
-            var performance = service.GetPerformance(dividend, buys);
-            ApplyChange(new TransactionDividendCalculatedEvent(Id, typeof(TransactionAggregate),
-                performance.ProfitAbsolute,
-                performance.ProfitPercentage,
-                performance.ProfitMade,
-                performance.HoldingPeriod,
-                performance.R));
-
-            ApplyChange(new StockOverallPerformanceChangedEvent(Id, typeof(TransactionAggregate), performance.ProfitAbsolute, StockId));
+            ApplyChange(new TransactionUndoEvent(Id, typeof(TransactionAggregate), OrderDate));
         }
 
         /// <summary>
@@ -307,30 +257,6 @@ namespace StockTradingAnalysis.Domain.Events.Aggregates
         /// </summary>
         /// <param name="event">The event</param>
         public void Handle(TransactionUndoEvent @event)
-        {
-        }
-
-        /// <summary>
-        /// Handles the given event <paramref name="event"/>
-        /// </summary>
-        /// <param name="event">The event</param>
-        public void Handle(TransactionPerformanceCalculatedEvent @event)
-        {
-        }
-
-        /// <summary>
-        /// Handles the given event <paramref name="event"/>
-        /// </summary>
-        /// <param name="event">The event</param>
-        public void Handle(TransactionDividendCalculatedEvent @event)
-        {
-        }
-
-        /// <summary>
-        /// Handles the given event <paramref name="event"/>
-        /// </summary>
-        /// <param name="event">The event</param>
-        public void Handle(StockOverallPerformanceChangedEvent @event)
         {
         }
 

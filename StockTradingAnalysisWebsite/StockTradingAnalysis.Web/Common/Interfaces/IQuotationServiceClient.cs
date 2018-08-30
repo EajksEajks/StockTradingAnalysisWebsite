@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using StockTradingAnalysis.Domain.Events.Domain;
+using StockTradingAnalysis.Interfaces.Domain;
 
 namespace StockTradingAnalysis.Web.Common.Interfaces
 {
@@ -14,7 +14,7 @@ namespace StockTradingAnalysis.Web.Common.Interfaces
         /// </summary>
         /// <param name="stockId">The stock.</param>
         /// <returns></returns>
-        IEnumerable<Quotation> Get(Guid stockId);
+        IEnumerable<IQuotation> Get(Guid stockId);
 
         /// <summary>
         /// Determines whether this instance is online.

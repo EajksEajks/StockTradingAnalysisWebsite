@@ -5,8 +5,16 @@ namespace StockTradingAnalysis.Interfaces.Domain
     /// <summary>
     /// The interface IStatistic defines time range based default statistical information without special statistic calculations
     /// </summary>
-    public interface IStatistic
+    public interface IStatistic : ITimeSliceKey
     {
+        /// <summary>
+        /// Gets the time slice.
+        /// </summary>
+        /// <value>
+        /// The time slice.
+        /// </value>
+        ITimeSlice TimeSlice { get; }
+
         /// <summary>
         /// Absolute profit
         /// </summary>
@@ -113,11 +121,6 @@ namespace StockTradingAnalysis.Interfaces.Domain
         Dictionary<string, decimal> FeedbackTop5 { get; }
 
         /// <summary>
-        /// All Feedback sorted by percentage
-        /// </summary>
-        Dictionary<int, decimal> Feedback { get; }
-
-        /// <summary>
         /// Absolute profit per asset class
         /// </summary>
         Dictionary<string, decimal> AbsoluteProfitPerTradingType { get; }
@@ -207,12 +210,12 @@ namespace StockTradingAnalysis.Interfaces.Domain
         /// <remarks>
         /// Root-square(amount of trades)*propability/stdev(R)
         /// </remarks>
-        decimal SQN { get; }
+        decimal Sqn { get; }
 
         /// <summary>
         /// Description of System Quality Number (SQN)
         /// </summary>
-        string SQNDescription { get; }
+        string SqnDescription { get; }
 
         /// <summary>
         /// Maximum losses in a row
@@ -260,11 +263,6 @@ namespace StockTradingAnalysis.Interfaces.Domain
         /// Key performance indicators
         /// </summary>
         //TODO:IEnumerable<StatisticsKPI> KPI { get; } Create new service, inject this service
-
-        /// <summary>
-        /// Information based on daily data, mainly used for charting
-        /// </summary>
-        //TODO:StatisticsCalcDaily DailyInformation { get; }
 
         /// <summary>
         /// Loss clusters

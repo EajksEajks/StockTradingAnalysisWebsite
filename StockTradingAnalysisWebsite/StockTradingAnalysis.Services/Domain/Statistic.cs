@@ -1,5 +1,6 @@
-﻿using StockTradingAnalysis.Interfaces.Domain;
+﻿using System;
 using System.Collections.Generic;
+using StockTradingAnalysis.Interfaces.Domain;
 
 namespace StockTradingAnalysis.Services.Domain
 {
@@ -8,6 +9,30 @@ namespace StockTradingAnalysis.Services.Domain
     /// </summary>
     public class Statistic : IStatistic
     {
+        /// <summary>
+        /// Gets or sets the start.
+        /// </summary>
+        /// <value>
+        /// The start.
+        /// </value>
+        public DateTime Start => TimeSlice.Start;
+
+        /// <summary>
+        /// Gets or sets the end.
+        /// </summary>
+        /// <value>
+        /// The end.
+        /// </value>
+        public DateTime End => TimeSlice.End;
+
+        /// <summary>
+        /// Gets the time slice.
+        /// </summary>
+        /// <value>
+        /// The time slice.
+        /// </value>
+        public ITimeSlice TimeSlice { get; }
+
         /// <summary>
         /// Absolute profit
         /// </summary>
@@ -114,11 +139,6 @@ namespace StockTradingAnalysis.Services.Domain
         public Dictionary<string, decimal> FeedbackTop5 { get; set; }
 
         /// <summary>
-        /// All Feedback sorted by percentage
-        /// </summary>
-        public Dictionary<int, decimal> Feedback { get; set; }
-
-        /// <summary>
         /// Absolute profit per asset class
         /// </summary>
         public Dictionary<string, decimal> AbsoluteProfitPerTradingType { get; set; }
@@ -208,12 +228,12 @@ namespace StockTradingAnalysis.Services.Domain
         /// <remarks>
         /// Root-square(amount of trades)*propability/stdev(R)
         /// </remarks>
-        public decimal SQN { get; set; }
+        public decimal Sqn { get; set; }
 
         /// <summary>
         /// Description of System Quality Number (SQN)
         /// </summary>
-        public string SQNDescription { get; set; }
+        public string SqnDescription { get; set; }
 
         /// <summary>
         /// Maximum losses in a row
@@ -251,5 +271,64 @@ namespace StockTradingAnalysis.Services.Domain
         /// Average MFE Absolute
         /// </summary>
         public decimal? AvgMFEAbsolute { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Statistic" /> class.
+        /// </summary>
+        /// <param name="slice">The slice.</param>
+        public Statistic(ITimeSlice slice)
+        {
+            TimeSlice = slice;
+            AbsoluteProfitPerWeekDay = new Dictionary<string, decimal>();
+        }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        /// <param name="other">An object to compare with this object.</param>
+        protected bool Equals(Statistic other)
+        {
+            if (other == null)
+                return false;
+
+            return Start == other.Start && End == other.End;
+        }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(ITimeSliceKey other)
+        {
+            if (other == null)
+                return false;
+
+            return Start == other.Start && End == other.End;
+        }
+
+        /// <summary>Determines whether the specified object is equal to the current object.</summary>
+        /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+        /// <param name="obj">The object to compare with the current object. </param>
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            if (obj.GetType() != this.GetType())
+                return false;
+
+            return Equals((Statistic)obj);
+        }
+
+        /// <summary>Serves as the default hash function. </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Start.GetHashCode() * 397) ^ End.GetHashCode();
+            }
+        }
     }
 }

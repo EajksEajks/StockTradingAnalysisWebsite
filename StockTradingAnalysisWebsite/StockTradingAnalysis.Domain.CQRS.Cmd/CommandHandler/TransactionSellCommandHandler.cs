@@ -34,8 +34,10 @@ namespace StockTradingAnalysis.Domain.CQRS.Cmd.CommandHandler
                 throw new DomainValidationException("Units", "Cannot sell zero units");
 
             //TODO: Further Validation
-            if (_book.GetOpenPosition(command.StockId).Shares < command.Shares)
+            if (_book.GetOrAddOpenPosition(command.StockId).Shares < command.Shares)
                 throw new DomainValidationException("Units", "The amount of available units for the stock is smaller than those sold.");
+
+            //TODO: Validation MAE must be smaller than share price if long, else higher, same for MFE
 
             //Create new transaction
             var transaction = new TransactionAggregate();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StockTradingAnalysis.Core.Extensions;
 using StockTradingAnalysis.Domain.CQRS.Query.Filter;
 using StockTradingAnalysis.Domain.CQRS.Query.Queries;
 using StockTradingAnalysis.Interfaces.Domain;
@@ -8,6 +9,7 @@ using StockTradingAnalysis.Interfaces.Queries;
 using StockTradingAnalysis.Interfaces.Services.Core;
 using StockTradingAnalysis.Interfaces.Services.Domain;
 using StockTradingAnalysis.Interfaces.Types;
+using StockTradingAnalysis.Services.Domain;
 
 namespace StockTradingAnalysis.Services.Services
 {
@@ -33,23 +35,32 @@ namespace StockTradingAnalysis.Services.Services
         private readonly IInterestRateCalculatorService _iirCalculatorService;
 
         /// <summary>
+        /// The transaction performance service
+        /// </summary>
+        private readonly ITransactionPerformanceService _transactionPerformanceService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TransactionCalculationService" /> class.
         /// </summary>
         /// <param name="queryDispatcher">The query dispatcher.</param>
         /// <param name="dateCalculationService">The date calculation service.</param>
         /// <param name="iirCalculatorService">The iir calculator service.</param>
+        /// <param name="transactionPerformanceService">The transaction performance service.</param>
         public TransactionCalculationService(
             IQueryDispatcher queryDispatcher,
             IDateCalculationService dateCalculationService,
-            IInterestRateCalculatorService iirCalculatorService)
+            IInterestRateCalculatorService iirCalculatorService,
+            ITransactionPerformanceService transactionPerformanceService)
         {
             _queryDispatcher = queryDispatcher;
             _dateCalculationService = dateCalculationService;
             _iirCalculatorService = iirCalculatorService;
+            _transactionPerformanceService = transactionPerformanceService;
         }
 
         /// <summary>
-        /// Calculates the sum of all inpayments for the given transactions.
+        /// Calculates the sum of all inpayments for the given transactions, order costs are substracted.
+        /// Sellings are substracted.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns>Sum of inpayments</returns>
@@ -64,6 +75,11 @@ namespace StockTradingAnalysis.Services.Services
                 if (tr is IBuyingTransaction)
                 {
                     sum += tr.PositionSize - tr.OrderCosts;
+                }
+
+                if (tr is ISellingTransaction)
+                {
+                    sum -= tr.PositionSize + tr.OrderCosts + (tr as ISellingTransaction).Taxes;
                 }
             }
 
@@ -86,7 +102,7 @@ namespace StockTradingAnalysis.Services.Services
 
             foreach (var stock in stocks)
             {
-                var filtered = transactions.Where(t => t.Stock.Id == stock.Id).OrderByDescending(t => t.OrderDate);
+                var filtered = transactions.Where(t => t.Stock.Id == stock.Id).OrderByDescending(t => t.OrderDate).ToList();
 
                 decimal allUnitsOfStock = 0;
                 foreach (var tr in filtered)
@@ -106,11 +122,11 @@ namespace StockTradingAnalysis.Services.Services
 
                 if (quotation == null)
                 {
-                    sumCapital += (filtered.FirstOrDefault().PricePerShare * allUnitsOfStock);
+                    sumCapital += filtered.FirstOrDefault().PricePerShare * allUnitsOfStock;
                 }
                 else
                 {
-                    sumCapital += (quotation.Close * allUnitsOfStock);
+                    sumCapital += quotation.Close * allUnitsOfStock;
                 }
             }
 
@@ -118,7 +134,7 @@ namespace StockTradingAnalysis.Services.Services
         }
 
         /// <summary>
-        /// Calculates the sum of all dividends for the given transactions (without taxes and order costs).
+        /// Calculates the sum of all dividends for the given transactions, substracting taxes and order costs.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns>Sum of inpayments</returns>
@@ -135,7 +151,7 @@ namespace StockTradingAnalysis.Services.Services
         /// <summary>
         /// The performance of the current period is calculated as if all shares whould have been sold at the beginning
         /// of this period and then the difference to the value at the end of the period is beeing calculated.
-        /// All buys of the year <paramref name="year" /> will be calculated seperatly on a daily basis.
+        /// All buys within the timeframe will be calculated seperatly on a daily basis.
         /// This calculation should only be used for periods starting with the begin of a year till the end of a year (IIR problem)
         /// </summary>
         /// <param name="query">The query should only contain the base query with special filters. Date range filters will automatically applied.</param>
@@ -146,9 +162,7 @@ namespace StockTradingAnalysis.Services.Services
         {
             var endOfLastYear = _dateCalculationService.GetEndDateOfYear(new DateTime(start.Year - 1, 1, 1));
 
-            var localQuery = query as TransactionAllQuery;
-
-            if (localQuery == null)
+            if (!(query is TransactionAllQuery localQuery))
                 throw new InvalidOperationException("CalculatePerformancePercentageForPeriod only works with a TransactionAllQuery"); //TODO: Not good
 
             var periodQuery = new TransactionAllQuery().CopyFiltersFrom(localQuery).Register(new TransactionStartDateFilter(start)).Register(new TransactionEndDateFilter(end));
@@ -198,6 +212,123 @@ namespace StockTradingAnalysis.Services.Services
             var val = _iirCalculatorService.Calculate(cashflows);
 
             return decimal.Round(Convert.ToDecimal(val) * 100, 2);
+        }
+
+        /// <summary>
+        /// Calculates the average buying prices.
+        /// </summary>
+        /// <param name="transactions">The transactions.</param>
+        /// <returns></returns>
+        public IEnumerable<IAverageBuyingPrice> CalculateAverageBuyingPrices(IOrderedEnumerable<ITransaction> transactions)
+        {
+            var filteredTransactions = transactions.OfTypes<ITransaction, IBuyingTransaction, ISellingTransaction>().ToList();
+
+            if (!filteredTransactions.Any())
+                return Enumerable.Empty<IAverageBuyingPrice>();
+
+            var result = new List<IAverageBuyingPrice>();
+
+            var accumulatedShares = 0m;
+            var accumulatedPositionSize = 0m;
+
+            foreach (var transaction in filteredTransactions)
+            {
+                if (transaction is IBuyingTransaction)
+                {
+
+                    accumulatedPositionSize += transaction.PositionSize;
+                    accumulatedShares += transaction.Shares;
+                }
+
+                if (accumulatedShares != 0)
+                    result.Add(new AverageBuyingPrice(transaction.OrderDate, decimal.Round(accumulatedPositionSize / accumulatedShares, 2)));
+
+                if (transaction is ISellingTransaction)
+                {
+                    accumulatedPositionSize -= transaction.PositionSize;
+                    accumulatedShares -= transaction.Shares;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Calculates open positions.
+        /// </summary>
+        /// <returns>Detailed information about open positions.</returns>
+        public IDetailedOpenPositionOverview CalculateOpenPositions()
+        {
+            var beginOfYear = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0);
+
+            var calculateProfit = new Func<IOpenPosition, IQuotation, IProfit>((pos, quote) =>
+                _transactionPerformanceService.GetProfit(
+                    pos.Shares * pos.PricePerShare,
+                    pos.OrderCosts,
+                    pos.Shares * (quote?.Close ?? 0),
+                    0m,
+                    0m));
+
+            var calculateYtdProfit = new Func<IOpenPosition, IStock, IQuotation, IProfit>((pos, stock, quote) =>
+             {
+                 var buyingQuote =
+                     _queryDispatcher.Execute(new StockQuotationsLastBeforeDateByIdQuery(stock.Id, beginOfYear));
+
+                 if (buyingQuote == null || quote == null)
+                     return new Profit(0, 0);
+
+                 //Add dividend revenue
+                 var query = new TransactionAllQuery()
+                     .Register(new TransactionStartDateFilter(beginOfYear))
+                     .Register(new TransactionEndDateFilter(DateTime.Now))
+                     .Register(new TransactionStockFilter(stock))
+                     .Register(new TransactionDividendFilter(true));
+
+                 var dividends = _queryDispatcher.Execute(query)
+                     .OfType<IDividendTransaction>().Sum(t => t.PositionSize - t.Taxes - t.OrderCosts);
+
+                 return _transactionPerformanceService.GetProfit(
+                     pos.Shares * buyingQuote.Close,
+                     pos.OrderCosts,
+                     pos.Shares * quote.Close + dividends,
+                     0m,
+                     0m);
+             });
+
+            var result = new DetailedOpenPositionOverview
+            {
+                OpenPositions = _queryDispatcher.Execute(new OpenPositionsAllQuery())
+                    .Select(pos =>
+                    {
+                        var stock = _queryDispatcher.Execute(new StockByIdQuery(pos.ProductId));
+                        var quote = stock.Quotations.OrderByDescending(q => q.Date).FirstOrDefault();
+
+                        return new DetailedOpenPosition(stock)
+                        {
+                            AveragePricePerShare = pos.PricePerShare,
+                            FirstOrderDate = pos.FirstOrderDate,
+                            PositionSize = pos.PositionSize,
+                            Shares = pos.Shares,
+                            CurrentQuotation = quote,
+                            Profit = calculateProfit(pos, quote),
+                            YearToDateProfit = calculateYtdProfit(pos, stock, quote),
+                            OrderCosts = pos.OrderCosts
+                        };
+                    }).ToList()
+            };
+
+            result.Summary = new DetailedOpenPositionSummary
+            {
+                PositionSize = result.OpenPositions.Sum(o => o.PositionSize),
+                Profit = _transactionPerformanceService.GetProfit(
+                    result.OpenPositions.Sum(o => o.PositionSize),
+                    0m,
+                    result.OpenPositions.Sum(o => (o.CurrentQuotation?.Close ?? 0) * o.Shares),
+                    0m,
+                    0m)
+            };
+
+            return result;
         }
     }
 }

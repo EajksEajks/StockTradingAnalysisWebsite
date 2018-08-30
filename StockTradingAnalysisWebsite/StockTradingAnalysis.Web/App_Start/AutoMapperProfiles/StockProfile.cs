@@ -10,7 +10,7 @@ using StockTradingAnalysis.Web.Models;
 namespace StockTradingAnalysis.Web.AutoMapperProfiles
 {
     /// <summary>
-    /// The StockProfile cotains the automapper configuration for <see cref="IStock"/>
+    /// The StockProfile cotains the automapper configuration for <see cref="IStock"/>.
     /// </summary>
     /// <seealso cref="Profile" />
     public class StockProfile : Profile
@@ -68,7 +68,7 @@ namespace StockTradingAnalysis.Web.AutoMapperProfiles
 
             var queryDispatcher = DependencyResolver.Current.GetService<IQueryDispatcher>();
 
-            var transactions = queryDispatcher.Execute(new TransactionsByStockIdQuery(stock.Id));
+            var transactions = queryDispatcher.Execute(new TransactionByStockIdQuery(stock.Id));
 
             return transactions ?? Enumerable.Empty<ITransaction>();
         }

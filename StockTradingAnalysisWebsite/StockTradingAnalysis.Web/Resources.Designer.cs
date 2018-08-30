@@ -1591,6 +1591,51 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profit.
+        /// </summary>
+        public static string Display_ViewModelOpenPositionAbsoluteProfit {
+            get {
+                return ResourceManager.GetString("Display_ViewModelOpenPositionAbsoluteProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aktueller Kurs.
+        /// </summary>
+        public static string Display_ViewModelOpenPositionCurrentQuotation {
+            get {
+                return ResourceManager.GetString("Display_ViewModelOpenPositionCurrentQuotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profit (%).
+        /// </summary>
+        public static string Display_ViewModelOpenPositionPercentageProfit {
+            get {
+                return ResourceManager.GetString("Display_ViewModelOpenPositionPercentageProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profit.
+        /// </summary>
+        public static string Display_ViewModelOpenPositionProfit {
+            get {
+                return ResourceManager.GetString("Display_ViewModelOpenPositionProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lfd. Jahr Profit.
+        /// </summary>
+        public static string Display_ViewModelOpenPositionYTDProfit {
+            get {
+                return ResourceManager.GetString("Display_ViewModelOpenPositionYTDProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Erstes Kaufdatum.
         /// </summary>
         public static string Display_ViewModelOpenTransactionMinOrderDate {
@@ -1618,7 +1663,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preis.
+        ///   Looks up a localized string similar to Ø Preis.
         /// </summary>
         public static string Display_ViewModelOpenTransactionPricePerUnit {
             get {
@@ -1753,7 +1798,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Insgesamt sind {0} Tagesendkurse in der Datenbank gespeichern. Neu hinzugefügt wurde n  {1} Kursdatensätze..
+        ///   Looks up a localized string similar to Insgesamt sind {0} Tagesendkurse in der Datenbank gespeichern. Neu hinzugefügt wurden  {1} Kursdatensätze..
         /// </summary>
         public static string StatusQuotations {
             get {
@@ -2230,6 +2275,15 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Durchschnittl. Kaufpreis.
+        /// </summary>
+        public static string ViewTextAverageBuyingPrice {
+            get {
+                return ResourceManager.GetString("ViewTextAverageBuyingPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zurück.
         /// </summary>
         public static string ViewTextBack {
@@ -2361,6 +2415,15 @@ namespace StockTradingAnalysis.Web {
         public static string ViewTextCapitalExpenditure {
             get {
                 return ResourceManager.GetString("ViewTextCapitalExpenditure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Positionen.
+        /// </summary>
+        public static string ViewTextCapitalExpenditurePositions {
+            get {
+                return ResourceManager.GetString("ViewTextCapitalExpenditurePositions", resourceCulture);
             }
         }
         
@@ -3022,7 +3085,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Intraday Trades.
+        ///   Looks up a localized string similar to # Intraday Trades.
         /// </summary>
         public static string ViewTextKpiAmountIntradayTrades {
             get {
@@ -3031,7 +3094,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Verlust-Tades.
+        ///   Looks up a localized string similar to # Verlust-Tades.
         /// </summary>
         public static string ViewTextKpiAmountOfLossTrades {
             get {
@@ -3040,7 +3103,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Gewinn-Tades.
+        ///   Looks up a localized string similar to # Gewinn-Tades.
         /// </summary>
         public static string ViewTextKpiAmountOfProfitTrades {
             get {
@@ -3058,7 +3121,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Trades pro Monat.
+        ///   Looks up a localized string similar to # Trades pro Monat.
         /// </summary>
         public static string ViewTextKpiAmountOfTransactionsPerMonth {
             get {
@@ -3067,7 +3130,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Trades pro Woche.
+        ///   Looks up a localized string similar to # Trades pro Woche.
         /// </summary>
         public static string ViewTextKpiAmountOfTransactionsPerWeek {
             get {
@@ -3076,7 +3139,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Trades pro Jahr.
+        ///   Looks up a localized string similar to # Trades pro Jahr.
         /// </summary>
         public static string ViewTextKpiAmountOfTransactionsPerYear {
             get {
@@ -3085,7 +3148,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anzahl Positionen Trades.
+        ///   Looks up a localized string similar to # Positionen Trades.
         /// </summary>
         public static string ViewTextKpiAmountPositionTrades {
             get {
@@ -3094,7 +3157,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AVG Buying Volume.
+        ///   Looks up a localized string similar to Ø Buying Volume.
         /// </summary>
         public static string ViewTextKpiAverageBuyVolume {
             get {
@@ -3130,7 +3193,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AVG Haltedauer Intraday.
+        ///   Looks up a localized string similar to Ø Haltedauer Intraday.
         /// </summary>
         public static string ViewTextKpiAvgHoldingPeriodIntradayTrades {
             get {
@@ -3139,7 +3202,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AVG Haltedauer Positionen.
+        ///   Looks up a localized string similar to Ø Haltedauer Positionen.
         /// </summary>
         public static string ViewTextKpiAvgHoldingPeriodPositionTrades {
             get {
@@ -3166,7 +3229,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Durchschnittlicher Verlust.
+        ///   Looks up a localized string similar to Ø Verlust.
         /// </summary>
         public static string ViewTextKpiLossAverage {
             get {
@@ -3193,7 +3256,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Max. aufeinanderfolgende Verlierer.
+        ///   Looks up a localized string similar to Max. ff. Verlierer.
         /// </summary>
         public static string ViewTextKpiMostConsecutiveLosses {
             get {
@@ -3202,7 +3265,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Max. aufeinanderfolgende Gewinner.
+        ///   Looks up a localized string similar to Max. ff. Gewinner.
         /// </summary>
         public static string ViewTextKpiMostConsecutiveWins {
             get {
@@ -3211,7 +3274,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Orderkosten/Steuern.
+        ///   Looks up a localized string similar to Orderkosten.
         /// </summary>
         public static string ViewTextKpiOrderCosts {
             get {
@@ -3229,7 +3292,7 @@ namespace StockTradingAnalysis.Web {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Durchschnittlicher Gewinn.
+        ///   Looks up a localized string similar to Ø Gewinn.
         /// </summary>
         public static string ViewTextKpiProfitAverage {
             get {
